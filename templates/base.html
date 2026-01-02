@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">RBAC System</div>
+
+      <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+
+        {% if current_user.is_authenticated and current_user.role == "ADMIN" %}
+        <div class="dropdown">
+          <button class="dropbtn" id="userMgmtBtn">User Management ▾</button>
+
+          <div class="dropdown-content" id="userDropdown">
+            <a href="/admin/users">See All Users</a>
+            <a href="/admin/create-user">Create User</a>
+            <a href="/admin/assign">Assign Developer to Manager</a>
+            <a href="/admin/assignments">View Current Assignments</a>
+          </div>
+        </div>
+        {% endif %}
+
+        <a href="/settings">Settings</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </nav>
+
+    <div class="page-container">{% block content %}{% endblock %}</div>
+
+    <script>
+      const btn = document.getElementById("userMgmtBtn");
+      const menu = document.getElementById("userDropdown");
+
+      btn.addEventListener("click", function (event) {
+        event.stopPropagation();
+
+        if (menu.style.display === "block") {
+          menu.style.display = "none";
+        } else {
+          menu.style.display = "block";
+        }
+      });
+
+      document.addEventListener("click", function () {
+        menu.style.display = "none";
+      });
+    </script>
+  </body>
+</html>

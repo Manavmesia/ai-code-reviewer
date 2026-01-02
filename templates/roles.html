@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Select Role</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/roles.css') }}"
+    />
+  </head>
+  <body>
+    <h2>Select Your Role</h2>
+
+    <a href="/login/admin"><button class="role-btn">ADMIN</button></a>
+    <a href="/login/manager"><button class="role-btn">MANAGER</button></a>
+    <a href="/login/developer"><button class="role-btn">DEVELOPER</button></a>
+  </body>
+</html>

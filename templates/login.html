@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/auth.css') }}"
+    />
+  </head>
+  <body>
+    <div class="login-box">
+      <h2>Login as {{ role }}</h2>
+
+      {% with messages = get_flashed_messages() %}
+      {% for msg in messages %}
+      <p class="{{ 'flash-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'flash-success' }}">{{ msg }}</p>
+      {% endfor %}
+      {% endwith %}
+
+      <form method="post">
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+
+      {% if role == "ADMIN" %}
+      <p><a href="/register-admin">Register Admin</a></p>
+      {% endif %}
+    </div>
+  </body>
+</html>

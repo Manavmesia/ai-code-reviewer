@@ -1,0 +1,67 @@
+{% extends "base.html" %} {% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/settings.css') }}"
+/>
+{% endblock %} {% block title %}Settings{% endblock %} {% block content %}
+<h2>Account Settings</h2>
+
+{% with messages = get_flashed_messages() %}
+{% for msg in messages %}
+<p class="{{ 'flash-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'flash-success' }}">{{ msg }}</p>
+{% endfor %} {% endwith %}
+
+<form method="post">
+  <input
+    id="name"
+    name="name"
+    value="{{ current_user.name }}"
+    disabled
+    required
+  /><br /><br />
+
+  <input
+    id="email"
+    type="email"
+    name="email"
+    value="{{ current_user.email }}"
+    disabled
+    required
+  /><br /><br />
+
+  <input
+    id="password"
+    type="password"
+    name="password"
+    placeholder="New Password"
+    disabled
+  /><br /><br />
+
+  <input
+    id="confirm"
+    type="password"
+    name="confirm_password"
+    placeholder="Confirm New Password"
+    disabled
+  /><br /><br />
+
+  <button type="button" id="editBtn">Edit</button>
+  <button type="submit" id="saveBtn" style="display: none">Save</button>
+</form>
+
+<script>
+  const editBtn = document.getElementById("editBtn");
+  const saveBtn = document.getElementById("saveBtn");
+
+  const fields = ["name", "email", "password", "confirm"].map((id) =>
+    document.getElementById(id)
+  );
+
+  editBtn.addEventListener("click", () => {
+    fields.forEach((f) => (f.disabled = false));
+    editBtn.style.display = "none";
+    saveBtn.style.display = "inline";
+  });
+</script>
+
+{% endblock %}

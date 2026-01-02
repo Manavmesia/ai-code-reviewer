@@ -1,0 +1,26 @@
+{% extends "base.html" %} {% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/admin.css') }}"
+/>
+{% endblock %} {% block title %}All Users{% endblock %} {% block content %}
+<h2>All Users</h2>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Role</th>
+    <th>Specialization</th>
+  </tr>
+
+  {% for user in users %}
+  <tr>
+    <td>{{ user.name }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.role }}</td>
+    <td>{{ user.role_specialization }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

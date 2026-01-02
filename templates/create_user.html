@@ -1,0 +1,71 @@
+{% extends "base.html" %} {% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/admin.css') }}"
+/>
+{% endblock %} {% block title %}Create User{% endblock %} {% block content %}
+<h2>Create User</h2>
+
+{% with messages = get_flashed_messages() %} {% for msg in messages %}
+<p
+  class="{{ 'flash-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'flash-success' }}"
+>
+  {{ msg }}
+</p>
+{% endfor %} {% endwith %}
+
+<form method="post">
+  <input name="name" placeholder="Name" required /><br /><br />
+
+  <input type="email" name="email" placeholder="Email" required /><br /><br />
+
+  <input
+    type="password"
+    name="password"
+    placeholder="Password"
+    required
+  /><br /><br />
+
+  <select name="role" required>
+    <option value="">Select Role</option>
+    <option value="MANAGER">Manager</option>
+    <option value="DEVELOPER">Developer</option></select
+  ><br /><br />
+
+  <div id="specBox">
+    <select name="specialization" required>
+      <option value="">Select Specialization</option>
+      <option value="Frontend Developer">Frontend Developer</option>
+      <option value="Backend Developer">Backend Developer</option>
+      <option value="UI/UX Developer">UI/UX Developer</option>
+      <option value="Mobile Developer">Mobile Developer</option>
+      <option value="Odoo Developer">Odoo Developer</option>
+    </select>
+  </div>
+  <br />
+
+  <div id="devBox" style="display: none">
+    <select name="developer">
+      <option value="">Assign Developer (optional)</option>
+      {% for d in developers %}
+      <option value="{{ d.id }}">{{ d.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <button type="submit">Create User</button>
+</form>
+
+<script>
+  const roleSelect = document.querySelector("select[name='role']");
+  const devBox = document.getElementById("devBox");
+
+  roleSelect.addEventListener("change", function () {
+    if (this.value === "MANAGER") {
+      devBox.style.display = "block";
+    } else {
+      devBox.style.display = "none";
+    }
+  });
+</script>
+{% endblock %}

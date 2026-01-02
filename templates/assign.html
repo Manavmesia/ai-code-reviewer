@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/admin.css') }}"
+/>
+{% endblock %}
+
+{% block title %}Assign Developer{% endblock %}
+
+{% block content %}
+<h2>Assign Developer to Manager</h2>
+
+{% with messages = get_flashed_messages() %} {% for msg in messages %}
+<p
+  class="{{ 'flash-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'flash-success' }}"
+>
+  {{ msg }}
+</p>
+{% endfor %} {% endwith %}
+
+<form method="post">
+  <select name="manager" required>
+    <option value="">Select Manager</option>
+    {% for m in managers %}
+    <option value="{{ m.id }}">{{ m.name }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="developer" required>
+    <option value="">Select Developer</option>
+    {% for d in developers %}
+    <option value="{{ d.id }}">{{ d.name }}</option>
+    {% endfor %}
+  </select>
+
+  <button type="submit">Assign</button>
+</form>
+{% endblock %}
