@@ -4,57 +4,100 @@
   href="{{ url_for('static', filename='css/admin.css') }}"
 />
 {% endblock %} {% block title %}Create User{% endblock %} {% block content %}
-<h2>Create User</h2>
 
-{% with messages = get_flashed_messages() %} {% for msg in messages %}
-<p
-  class="{{ 'flash-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'flash-success' }}"
->
-  {{ msg }}
-</p>
-{% endfor %} {% endwith %}
+<div class="page-header">
+  <h2>Create New User</h2>
+  <p>Add a new user to the system with appropriate role and permissions</p>
+</div>
 
-<form method="post">
-  <input name="name" placeholder="Name" required /><br /><br />
-
-  <input type="email" name="email" placeholder="Email" required /><br /><br />
-
-  <input
-    type="password"
-    name="password"
-    placeholder="Password"
-    required
-  /><br /><br />
-
-  <select name="role" required>
-    <option value="">Select Role</option>
-    <option value="MANAGER">Manager</option>
-    <option value="DEVELOPER">Developer</option></select
-  ><br /><br />
-
-  <div id="specBox">
-    <select name="specialization" required>
-      <option value="">Select Specialization</option>
-      <option value="Frontend Developer">Frontend Developer</option>
-      <option value="Backend Developer">Backend Developer</option>
-      <option value="UI/UX Developer">UI/UX Developer</option>
-      <option value="Mobile Developer">Mobile Developer</option>
-      <option value="Odoo Developer">Odoo Developer</option>
-    </select>
-  </div>
-  <br />
-
-  <div id="devBox" style="display: none">
-    <select name="developer">
-      <option value="">Assign Developer (optional)</option>
-      {% for d in developers %}
-      <option value="{{ d.id }}">{{ d.name }}</option>
-      {% endfor %}
-    </select>
+<div class="content-card">
+  <div class="card-header">
+    <h3>User Information</h3>
   </div>
 
-  <button type="submit">Create User</button>
-</form>
+  <div class="card-body">
+    <form method="post" class="form-container">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Enter full name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter email address"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Create a secure password"
+          required
+        />
+        <div class="help-text">Password must be at least 8 characters long</div>
+      </div>
+
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select name="role" id="role" required>
+          <option value="">Select a role</option>
+          <option value="MANAGER">Manager</option>
+          <option value="DEVELOPER">Developer</option>
+        </select>
+      </div>
+
+      <div id="specBox" class="form-group">
+        <label for="specialization">Specialization</label>
+        <select name="specialization" id="specialization" required>
+          <option value="">Select specialization</option>
+          <option value="Frontend Developer">Frontend Developer</option>
+          <option value="Backend Developer">Backend Developer</option>
+          <option value="UI/UX Developer">UI/UX Developer</option>
+          <option value="Mobile Developer">Mobile Developer</option>
+          <option value="Odoo Developer">Odoo Developer</option>
+        </select>
+      </div>
+
+      <div id="devBox" class="form-group manager-section" style="display: none">
+        <label for="developer">Assign Developer (Optional)</label>
+        <div class="help-text">
+          Optionally assign an existing developer to this manager
+        </div>
+        <select name="developer" id="developer">
+          <option value="">Select a developer</option>
+          {% for d in developers %}
+          <option value="{{ d.id }}">
+            {{ d.name }} ({{ d.role_specialization }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <a href="{{ url_for('admin_users') }}" class="btn btn-secondary"
+          >Cancel</a
+        >
+        <button type="submit" class="btn btn-success">
+          <span>+</span> Create User
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
   const roleSelect = document.querySelector("select[name='role']");
@@ -63,9 +106,61 @@
   roleSelect.addEventListener("change", function () {
     if (this.value === "MANAGER") {
       devBox.style.display = "block";
+      // Add smooth animation
+      devBox.style.opacity = "0";
+      setTimeout(() => {
+        devBox.style.opacity = "1";
+        devBox.style.transform = "translateY(0)";
+      }, 10);
     } else {
-      devBox.style.display = "none";
+      devBox.style.opacity = "0";
+      devBox.style.transform = "translateY(-10px)";
+      setTimeout(() => {
+        devBox.style.display = "none";
+      }, 200);
     }
   });
 </script>
+
+<style>
+  .manager-section {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    transition: var(--transition);
+  }
+
+  .help-text {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    font-style: italic;
+  }
+
+  .form-actions {
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .form-actions .btn span {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .form-actions {
+      flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
+
 {% endblock %}

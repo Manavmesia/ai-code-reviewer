@@ -1,40 +1,179 @@
-{% extends "base.html" %}
-
-{% block css %}
+{% extends "base.html" %} {% block css %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/admin.css') }}"
 />
-{% endblock %}
+{% endblock %} {% block title %}Assign Developer{% endblock %} {% block content
+%}
 
-{% block title %}Assign Developer{% endblock %}
+<div class="page-header">
+  <h2>Assign Developer</h2>
+  <p>Assign a developer to work under a specific manager</p>
+</div>
 
-{% block content %}
-<h2>Assign Developer to Manager</h2>
+<div class="content-card">
+  <div class="card-header">
+    <h3>Create New Assignment</h3>
+  </div>
 
-{% with messages = get_flashed_messages() %} {% for msg in messages %}
-<p
-  class="{{ 'flash-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'flash-success' }}"
->
-  {{ msg }}
-</p>
-{% endfor %} {% endwith %}
+  <div class="card-body">
+    <form method="post" class="form-container">
+      <div class="form-group">
+        <label for="manager">Select Manager</label>
+        <select name="manager" id="manager" required>
+          <option value="">Choose a manager</option>
+          {% for m in managers %}
+          <option value="{{ m.id }}">
+            {{ m.name }} ({{ m.role_specialization }})
+          </option>
+          {% endfor %}
+        </select>
+        <div class="help-text">The manager who will oversee the developer</div>
+      </div>
 
-<form method="post">
-  <select name="manager" required>
-    <option value="">Select Manager</option>
-    {% for m in managers %}
-    <option value="{{ m.id }}">{{ m.name }}</option>
-    {% endfor %}
-  </select>
+      <div class="form-group">
+        <label for="developer">Select Developer</label>
+        <h3>Assign Developers</h3>
 
-  <select name="developer" required>
-    <option value="">Select Developer</option>
-    {% for d in developers %}
-    <option value="{{ d.id }}">{{ d.name }}</option>
-    {% endfor %}
-  </select>
+        <div class="assign-box">
+          <div class="assign-header" onclick="toggleDropdown()">
+            <span>Select Developers</span>
+            <span id="arrow">▼</span>
+          </div>
 
-  <button type="submit">Assign</button>
-</form>
+          <div id="selectedDevs" class="selected-bar"></div>
+
+          <input
+            type="text"
+            id="devSearch"
+            class="search-box"
+            placeholder="Search developer..."
+            style="display: none"
+          />
+
+          <div id="devList" class="dev-list" style="display: none">
+            {% for d in developers %}
+            <div
+              class="dev-item"
+              data-id="{{ d.id }}"
+              data-name="{{ d.name|lower }}"
+            >
+              {{ d.name }} – {{ d.role_specialization }}
+            </div>
+            {% endfor %}
+          </div>
+
+          <p id="notFound" style="display: none; color: red">
+            No developers found
+          </p>
+        </div>
+
+        <input type="hidden" name="developers" id="developersInput" />
+      </div>
+
+      <div class="form-actions">
+        <a href="{{ url_for('view_assignments') }}" class="btn btn-secondary"
+          >Cancel</a
+        >
+        <button type="submit" class="btn btn-success">
+          <span>Create</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let selected = new Map();
+
+  document.querySelectorAll(".dev-item").forEach((el) => {
+    el.onclick = () => {
+      if (el.style.display === "none") return;
+
+      let id = el.dataset.id;
+      let name = el.innerText;
+
+      if (!selected.has(id)) {
+        selected.set(id, name);
+        renderSelected();
+      }
+    };
+  });
+
+  function renderSelected() {
+    let bar = document.getElementById("selectedDevs");
+    bar.innerHTML = "";
+
+    selected.forEach((name, id) => {
+      let chip = document.createElement("span");
+      chip.className = "selected-chip";
+      chip.innerText = name + " ✖";
+      chip.onclick = () => {
+        selected.delete(id);
+        renderSelected();
+      };
+      bar.appendChild(chip);
+    });
+  }
+
+  document.getElementById("devSearch").addEventListener("input", function () {
+    let term = this.value.toLowerCase();
+    let found = false;
+
+    document.querySelectorAll(".dev-item").forEach((el) => {
+      const name = el.dataset.name;
+
+      if (term === "" || name.startsWith(term)) {
+        el.style.display = "block";
+        found = true;
+      } else {
+        el.style.display = "none";
+      }
+    });
+
+    document.getElementById("notFound").style.display = found
+      ? "none"
+      : "block";
+  });
+
+  function toggleDropdown() {
+    dropdownOpen = !dropdownOpen;
+    document.getElementById("devList").style.display = dropdownOpen
+      ? "block"
+      : "none";
+    document.getElementById("devSearch").style.display = dropdownOpen
+      ? "block"
+      : "none";
+    document.getElementById("arrow").innerText = dropdownOpen ? "▲" : "▼";
+  }
+
+  let dropdownOpen = false;
+
+  document.querySelector("form").onsubmit = () => {
+    if (selected.size === 0) {
+      alert("Please select at least one developer");
+      return false;
+    }
+    document.getElementById("developersInput").value = Array.from(
+      selected.keys()
+    ).join(",");
+  };
+</script>
+<style>
+  .form-actions .btn span {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .form-actions {
+      flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
+
 {% endblock %}

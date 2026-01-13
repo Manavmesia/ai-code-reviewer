@@ -12,6 +12,8 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.Text)
     role = db.Column(db.String(20))
     role_specialization = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
     
 class Assignment(db.Model):
     __tablename__ = "assignments"

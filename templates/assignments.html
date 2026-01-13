@@ -4,29 +4,90 @@
   href="{{ url_for('static', filename='css/admin.css') }}"
 />
 {% endblock %} {% block title %}Assignments{% endblock %} {% block content %}
-<h2>Current Assignments</h2>
 
-<table border="1" cellpadding="10">
-  <tr>
-    <th>Manager</th>
-    <th>Developer</th>
-    <th>Action</th>
-  </tr>
+<div class="page-header">
+  <h2>Current Assignments</h2>
+  <p>View and manage developer assignments to managers</p>
+</div>
 
-  {% for a, manager, developer in assignments %}
-  <tr>
-    <td>{{ manager.name }}</td>
-    <td>{{ developer.name }}</td>
-    <td>
-      <a
-        href="/admin/unassign/{{ a.id }}"
-        onclick="return confirm('Unassign this developer?')"
-      >
-        Unassign
-      </a>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+{% with messages = get_flashed_messages() %} {% for msg in messages %}
+<div
+  class="alert {{ 'alert-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'alert-success' }}"
+>
+  <span>{{ msg }}</span>
+  <button class="flash-close" onclick="this.parentElement.remove()">✖</button>
+</div>
+{% endfor %} {% endwith %}
+
+<div class="content-card">
+  <div class="card-header">
+    <h3>Manager-Developer Assignments</h3>
+    <a href="{{ url_for('assign_dev') }}" class="btn btn-primary">
+      <span>+</span> New Assignment
+    </a>
+  </div>
+
+  <div class="card-body">
+    {% if assignments %}
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Manager</th>
+            <th>Specialization</th>
+            <th>Developer</th>
+            <th>Specialization</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a, manager, developer in assignments %}
+          <tr>
+            <td>
+              <div class="user-info">
+                <strong>{{ manager.name }}</strong>
+                <small>{{ manager.email }}</small>
+              </div>
+            </td>
+            <td>
+              <span class="role-badge role-manager"
+                >{{ manager.role_specialization }}</span
+              >
+            </td>
+            <td>
+              <div class="user-info">
+                <strong>{{ developer.name }}</strong>
+                <small>{{ developer.email }}</small>
+              </div>
+            </td>
+            <td>
+              <span class="role-badge role-developer"
+                >{{ developer.role_specialization }}</span
+              >
+            </td>
+            <td class="actions-cell">
+              <a
+                href="{{ url_for('unassign_dev',
+                assignment_id = a.id,
+                next = url_for('view_assignments'))}}"
+                class="btn btn-sm btn-danger"
+                onclick="return confirm('Are you sure you want to unassign {{ developer.name }} from {{ manager.name }}?')"
+              >
+                Unassign
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-table">
+      <p>No assignments found</p>
+      <small>Create your first assignment to get started</small>
+    </div>
+    {% endif %}
+  </div>
+</div>
 
 {% endblock %}

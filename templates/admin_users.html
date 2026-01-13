@@ -4,23 +4,180 @@
   href="{{ url_for('static', filename='css/admin.css') }}"
 />
 {% endblock %} {% block title %}All Users{% endblock %} {% block content %}
-<h2>All Users</h2>
 
-<table border="1" cellpadding="10">
-  <tr>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Role</th>
-    <th>Specialization</th>
-  </tr>
+<div class="page-header">
+  <h2>All Users</h2>
+  <p>Manage user accounts and their roles</p>
+</div>
 
-  {% for user in users %}
-  <tr>
-    <td>{{ user.name }}</td>
-    <td>{{ user.email }}</td>
-    <td>{{ user.role }}</td>
-    <td>{{ user.role_specialization }}</td>
-  </tr>
-  {% endfor %}
-</table>
+{% with messages = get_flashed_messages() %} {% for msg in messages %}
+<div
+  class="alert {{ 'alert-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'alert-success' }}"
+>
+  <span>{{ msg }}</span>
+  <button class="flash-close" onclick="this.parentElement.remove()">✖</button>
+</div>
+{% endfor %} {% endwith %}
+
+<div class="content-card">
+  <div
+    class="card-header"
+    style="
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    "
+  >
+    <h3>User Management</h3>
+    <div style="display: flex; gap: 0.75rem">
+      <a href="{{ url_for('view_assignments') }}" class="btn btn-secondary">
+        📋 View Assignments
+      </a>
+
+      <a href="{{ url_for('create_user') }}" class="btn btn-primary">
+        <span>➕ Create User</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <form method="get" class="filter-bar">
+      <div class="filter-group">
+        <label for="roleSelect">Filter by Role:</label>
+        <select name="role" id="roleSelect" class="form-select">
+          <option value="">All Roles</option>
+          <option value="ADMIN">Admin</option>
+          <option value="MANAGER">Manager</option>
+          <option value="DEVELOPER">Developer</option>
+        </select>
+
+        <div id="specializationBox" style="display: none; margin-top: 10px">
+          <label>Specialization</label>
+          <select
+            id="specializationSelect"
+            name="specialization"
+            class="form-select"
+          ></select>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="sort-filter">Sort By:</label>
+        <select name="sort" id="sort-filter">
+          <option value="">Default</option>
+          <option value="name_asc">Name ↑</option>
+          <option value="name_desc">Name ↓</option>
+          <option value="date_asc">Oldest</option>
+          <option value="date_desc">Newest</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-secondary">Apply Filters</button>
+    </form>
+
+    <div class="table-container">
+      <form action="/admin/bulk-delete" method="post">
+        <table class="table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="selectAll" /></th>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Specialization</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>
+                <input type="checkbox" name="user_ids" value="{{ user.id }}" />
+              </td>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="role-badge role-{{ user.role|lower }}">
+                  {{ user.role }}
+                </span>
+              </td>
+              <td>{{ user.role_specialization or 'N/A' }}</td>
+              <td class="actions-cell">
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-secondary"
+                  formaction="/admin/user/{{ user.id }}"
+                  formmethod="get"
+                >
+                  ℹ️
+                </button>
+
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-danger"
+                  formaction="/admin/delete-user/{{ user.id }}"
+                  formmethod="post"
+                  onclick="return confirm('Are you sure?');"
+                >
+                  🗑️
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <button type="submit" class="btn btn-danger">Delete Selected</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("selectAll").addEventListener("change", function () {
+    const checkboxes = document.querySelectorAll("input[name='user_ids']");
+    checkboxes.forEach((cb) => (cb.checked = this.checked));
+  });
+
+  const roleSelect = document.getElementById("roleSelect");
+  const specializationBox = document.getElementById("specializationBox");
+  const specializationSelect = document.getElementById("specializationSelect");
+
+  const specializations = {
+    DEVELOPER: [
+      "Frontend Developer",
+      "Backend Developer",
+      "UI/UX Developer",
+      "Mobile Developer",
+      "Odoo Developer",
+    ],
+    MANAGER: [
+      "Frontend Developer",
+      "Backend Developer",
+      "UI/UX Developer",
+      "Mobile Developer",
+      "Odoo Developer",
+    ],
+  };
+
+  roleSelect.addEventListener("change", function () {
+    const role = this.value;
+    specializationSelect.innerHTML = "";
+
+    if (specializations[role] && specializations[role].length > 0) {
+      specializationBox.style.display = "block";
+
+      specializationSelect.innerHTML += `<option value="">All</option>`;
+
+      specializations[role].forEach((spec) => {
+        specializationSelect.innerHTML += `<option value="${spec}">${spec}</option>`;
+      });
+    } else {
+      specializationBox.style.display = "none";
+    }
+  });
+</script>
+
 {% endblock %}

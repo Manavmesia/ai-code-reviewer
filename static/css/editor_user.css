@@ -1,0 +1,136 @@
+.manager-section {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    transition: var(--transition);
+}
+
+.manager-section.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.manager-section.hide {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.multi-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--surface-color);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    min-height: 120px;
+    transition: var(--transition);
+}
+
+.multi-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.multi-select option {
+    padding: 0.5rem;
+    background: var(--surface-color);
+    color: var(--text-primary);
+}
+
+.help-text {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+
+.selected-count {
+    margin-top: 0.5rem;
+    text-align: right;
+}
+
+.selected-count small {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.form-actions {
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+
+.dev-list {
+    border-radius: 6px;
+    background: #fff;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.dev-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.dev-item:hover {
+    background: #f3f7ff;
+}
+
+.selected-bar {
+    margin: 10px 0;
+}
+
+.selected-chip {
+    display: inline-block;
+    padding: 6px 10px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 12px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.assign-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.assign-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+#selectAllBtn {
+    display: none;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.dev-item.assigned {
+    background: #f3f3f3;
+    color: #999;
+    cursor: not-allowed;
+}
+

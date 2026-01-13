@@ -8,10 +8,33 @@
     />
   </head>
   <body>
-    <h2>Select Your Role</h2>
+    <div class="roles-container">
+      <div class="roles-header">
+        <h2>Select Your Role</h2>
+        <p>
+          Choose the role that best describes your position in the organization.
+        </p>
+      </div>
 
-    <a href="/login/admin"><button class="role-btn">ADMIN</button></a>
-    <a href="/login/manager"><button class="role-btn">MANAGER</button></a>
-    <a href="/login/developer"><button class="role-btn">DEVELOPER</button></a>
+      <div class="roles-grid">
+        <a href="/login/admin" class="role-btn role-admin">
+          <div class="role-icon"></div>
+          <div class="role-name">Administrator</div>
+          <div class="role-desc">Full system access and user management</div>
+        </a>
+        <a href="/login/manager" class="role-btn role-manager">
+          <div class="role-icon"></div>
+          <div class="role-name">Manager</div>
+          <div class="role-desc">Team oversight and project management</div>
+        </a>
+        <a href="/login/developer" class="role-btn role-developer">
+          <div class="role-icon"></div>
+          <div class="role-name">Developer</div>
+          <div class="role-desc">Code development and technical tasks</div>
+        </a>
+      </div>
+
+      <a href="/" class="back-link">← Back to Home</a>
+    </div>
   </body>
 </html>

@@ -5,16 +5,116 @@
 />
 {% endblock %} {% block title %}Developer Dashboard{% endblock %} {% block
 content %}
-<h2>Welcome {{ current_user.name }}</h2>
 
-<table border="1" cellpadding="10">
-  <tr>
-    <th>Email</th>
-    <td>{{ current_user.email }}</td>
-  </tr>
-  <tr>
-    <th>Role</th>
-    <td>{{ current_user.role }}</td>
-  </tr>
-</table>
+<div class="page-header">
+  <h2>Welcome, {{ current_user.name }}!</h2>
+  <p>Developer Dashboard</p>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Profile Information Card -->
+  <div class="dashboard-card">
+    <div class="card-header">
+      <h3>👤 Profile Information</h3>
+    </div>
+    <div class="card-body">
+      <div class="profile-info">
+        <div class="info-row">
+          <span class="info-label">Name:</span>
+          <span class="info-value">{{ current_user.name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email:</span>
+          <span class="info-value">{{ current_user.email }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Role:</span>
+          <span class="info-value">
+            <span class="role-badge role-developer"
+              >{{ current_user.role }}</span
+            >
+          </span>
+        </div>
+        {% if current_user.role_specialization %}
+        <div class="info-row">
+          <span class="info-label">Specialization:</span>
+          <span class="info-value">{{ current_user.role_specialization }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .action-buttons .btn {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .activity-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+  }
+
+  .activity-content {
+    flex: 1;
+  }
+
+  .activity-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .activity-time {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .action-buttons .btn {
+      width: 100%;
+    }
+  }
+</style>
+
 {% endblock %}

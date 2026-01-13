@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/user_info.css') }}"
+/>
+{% endblock %}
+
+{% block title %}User Info{% endblock title %}
+
+{% block content %}
+<div class="page-header">
+  <h2>User Information</h2>
+</div>
+
+{% with messages = get_flashed_messages() %} {% for msg in messages %}
+<div class="alert {{ 'alert-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'alert-success' }}">
+  <span>{{ msg }}</span>
+  <button class="flash-close" onclick="this.parentElement.remove()">✖</button>
+</div>
+{% endfor %} {% endwith %}
+
+<table>
+  <tr>
+    <td>Name</td>
+    <td>{{ user.name }}</td>
+  </tr>
+  <tr>
+    <td>Email</td>
+    <td>{{ user.email }}</td>
+  </tr>
+  <tr>
+    <td>Role</td>
+    <td>{{ user.role }}</td>
+  </tr>
+  <tr>
+    <td>Specialization</td>
+    <td>{{ user.role_specialization }}</td>
+  </tr>
+  <tr>
+    <td>Created</td>
+    <td>{{ user.created_at }}</td>
+  </tr>
+</table>
+
+{% if user.role == "MANAGER" %}
+<h3>Assigned Developers</h3>
+<ul>
+  {% for d in assigned_devs %}
+  <li>{{ d.name }}</li>
+  {% else %}
+  <li>No developers assigned</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if user.role == "DEVELOPER" %}
+<p>Manager: {{manager.name if manager else "Not assigned" }}</p>
+{% endif %}
+
+<form action="/admin/edit-user/{{ user.id }}", method="get">
+    <button class="btn-edit">Edit</button>
+</form>
+
+<a href="/admin/users">← Back to Users</a>
+{% endblock content %}

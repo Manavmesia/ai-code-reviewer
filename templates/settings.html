@@ -3,65 +3,287 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/settings.css') }}"
 />
-{% endblock %} {% block title %}Settings{% endblock %} {% block content %}
-<h2>Account Settings</h2>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/admin.css') }}"
+/>
+{% endblock %} {% block title %}Account Settings{% endblock %} {% block content
+%}
+
+<div class="page-header">
+  <h2>Account Settings</h2>
+  <p>Manage your account information and preferences</p>
+</div>
 
 {% with messages = get_flashed_messages() %}
 {% for msg in messages %}
-<p class="{{ 'flash-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'flash-success' }}">{{ msg }}</p>
-{% endfor %} {% endwith %}
+<div class="alert {{ 'alert-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'alert-success' }}">
+  <span>{{ msg }}</span>
+  <button class="flash-close" onclick="this.parentElement.remove()">✖</button>
+</div>
+{% endfor %}
+{% endwith %}
 
-<form method="post">
-  <input
-    id="name"
-    name="name"
-    value="{{ current_user.name }}"
-    disabled
-    required
-  /><br /><br />
+<div class="settings-container">
+  <div class="content-card">
+    <div class="card-header">
+      <h3>👤 Profile Information</h3>
+      <p>Update your personal information</p>
+    </div>
 
-  <input
-    id="email"
-    type="email"
-    name="email"
-    value="{{ current_user.email }}"
-    disabled
-    required
-  /><br /><br />
+    <div class="card-body">
+      <form method="post" class="form-container" id="settingsForm">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value="{{ current_user.name }}"
+            disabled
+            required
+          />
+          <div class="help-text">Your display name in the system</div>
+        </div>
 
-  <input
-    id="password"
-    type="password"
-    name="password"
-    placeholder="New Password"
-    disabled
-  /><br /><br />
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value="{{ current_user.email }}"
+            disabled
+            required
+          />
+          <div class="help-text">Your login email address</div>
+        </div>
 
-  <input
-    id="confirm"
-    type="password"
-    name="confirm_password"
-    placeholder="Confirm New Password"
-    disabled
-  /><br /><br />
+        <div class="form-group">
+          <label for="password">New Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter new password"
+            disabled
+          />
+          <div class="help-text">Leave blank to keep current password</div>
+        </div>
 
-  <button type="button" id="editBtn">Edit</button>
-  <button type="submit" id="saveBtn" style="display: none">Save</button>
-</form>
+        <div class="form-group">
+          <label for="confirm">Confirm New Password</label>
+          <input
+            id="confirm"
+            name="confirm_password"
+            type="password"
+            placeholder="Confirm new password"
+            disabled
+          />
+          <div class="help-text">Re-enter your new password</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="editBtn" class="btn btn-primary">
+            <span>✏️</span> Edit Profile
+          </button>
+          <button
+            type="submit"
+            id="saveBtn"
+            class="btn btn-success"
+            style="display: none"
+          >
+            <span>💾</span> Save Changes
+          </button>
+          <button
+            type="button"
+            id="cancelBtn"
+            class="btn btn-secondary"
+            style="display: none"
+          >
+            <span>❌</span> Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="card-header">
+      <h3>ℹ️ Account Information</h3>
+      <p>Your current account details</p>
+    </div>
+
+    <div class="card-body">
+      <div class="account-info">
+        <div class="info-row">
+          <span class="info-label">User ID:</span>
+          <span class="info-value">{{ current_user.id }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Role:</span>
+          <span class="info-value">
+            <span class="role-badge role-{{ current_user.role.lower() }}"
+              >{{ current_user.role }}</span
+            >
+          </span>
+        </div>
+        {% if current_user.role_specialization %}
+        <div class="info-row">
+          <span class="info-label">Specialization:</span>
+          <span class="info-value">{{ current_user.role_specialization }}</span>
+        </div>
+        {% endif %}
+        <div class="info-row">
+          <span class="info-label">Account Status:</span>
+          <span class="info-value">
+            <span class="status-badge status-active">Active</span>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Last Login:</span>
+          <span class="info-value">Today</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   const editBtn = document.getElementById("editBtn");
   const saveBtn = document.getElementById("saveBtn");
+  const cancelBtn = document.getElementById("cancelBtn");
+  const form = document.getElementById("settingsForm");
 
   const fields = ["name", "email", "password", "confirm"].map((id) =>
     document.getElementById(id)
   );
 
+  let originalValues = {};
+
   editBtn.addEventListener("click", () => {
-    fields.forEach((f) => (f.disabled = false));
+    // Store original values
+    fields.forEach((field) => {
+      originalValues[field.id] = field.value;
+    });
+
+    // Enable fields
+    fields.forEach((field) => {
+      field.disabled = false;
+      if (field.type === "password") {
+        field.value = "";
+      }
+    });
+
+    // Show/hide buttons
     editBtn.style.display = "none";
-    saveBtn.style.display = "inline";
+    saveBtn.style.display = "inline-block";
+    cancelBtn.style.display = "inline-block";
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    // Restore original values
+    fields.forEach((field) => {
+      field.value = originalValues[field.id] || "";
+      field.disabled = true;
+    });
+
+    // Show/hide buttons
+    editBtn.style.display = "inline-block";
+    saveBtn.style.display = "none";
+    cancelBtn.style.display = "none";
+  });
+
+  // Form validation
+  form.addEventListener("submit", (e) => {
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm").value;
+
+    if (password && password !== confirm) {
+      e.preventDefault();
+      alert("Passwords do not match!");
+      return;
+    }
+
+    if (password && password.length < 8) {
+      e.preventDefault();
+      alert("Password must be at least 8 characters long!");
+      return;
+    }
   });
 </script>
+
+<style>
+  .settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .status-active {
+    background: var(--success-color);
+    color: white;
+  }
+
+  .security-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .security-item {
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .security-info h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .security-info p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+    margin-top: 2rem;
+  }
+
+  .form-actions .btn span {
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
 
 {% endblock %}

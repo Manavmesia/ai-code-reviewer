@@ -4,6 +4,43 @@
   href="{{ url_for('static', filename='css/dashboard.css') }}"
 />
 {% endblock %} {% block title %}Dashboard{% endblock %} {% block content %}
-<h2>Admin Dashboard</h2>
-<p>Welcome, {{ current_user.name }}</p>
+
+<div class="page-header">
+  <h2>Admin Dashboard</h2>
+  <p>Welcome, {{ current_user.name }}</p>
+</div>
+
+<div class="dashboard-grid">
+  <div class="dashboard-card">
+    <div class="card-header">
+      <h3>👤 Profile Information</h3>
+    </div>
+    <div class="card-body">
+      <div class="profile-info">
+        <div class="info-row">
+          <span class="info-label">Name:</span>
+          <span class="info-value">{{ current_user.name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email:</span>
+          <span class="info-value">{{ current_user.email }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Role:</span>
+          <span class="info-value">
+            <span class="role-badge role-admin"
+              >{{ current_user.role }}</span
+            >
+          </span>
+        </div>
+        {% if current_user.role_specialization %}
+        <div class="info-row">
+          <span class="info-label">Specialization:</span>
+          <span class="info-value">{{ current_user.role_specialization }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

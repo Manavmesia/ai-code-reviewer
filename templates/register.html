@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Login</title>
+    <title>Register</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/auth.css') }}"
@@ -10,10 +10,10 @@
   <body>
     <div class="auth-container">
       <div class="auth-header">
-        <h2>Login</h2>
-        <p>Welcome! Please sign in to your account.</p>
+        <h2>Create Account</h2>
+        <p>Create your account to get started.</p>
       </div>
-      
+
       {% with messages = get_flashed_messages() %}
       {% for msg in messages %}
       <div class="flash-{{ 'error' if 'error' in msg|lower or 'invalid' in msg|lower else 'success' }}">
@@ -22,8 +22,18 @@
       </div>
       {% endfor %}
       {% endwith %}
-      
+
       <form class="auth-form" method="post">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Enter your full name"
+            required
+          />
+        </div>
         <div class="form-group">
           <label for="email">Email Address</label>
           <input
@@ -40,17 +50,26 @@
             type="password"
             id="password"
             name="password"
-            placeholder="Enter your password"
+            placeholder="Create a password"
             required
           />
         </div>
-        <button type="submit" class="btn">Sign In</button>
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password</label>
+          <input
+            type="password"
+            id="confirm_password"
+            name="confirm_password"
+            placeholder="Confirm your password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn">Create Account</button>
 
         <div class="auth-links">
-          <a href="#" class="forgot-password">Forgot your password?</a>
           <p class="register-link">
-            Don't have an account?
-            <a href="{{ url_for('register') }}">Create one</a>
+            Already have an account?
+            <a href="{{ url_for('login') }}">Sign in</a>
           </p>
         </div>
       </form>

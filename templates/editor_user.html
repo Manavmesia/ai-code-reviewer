@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/admin.css') }}"
+/>
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='css/editor_user.css') }}"
+/>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <h2>Edit User</h2>
+  <p>Update user information and role assignments</p>
+</div>
+
+{% with messages = get_flashed_messages() %} {% for msg in messages %}
+<div
+  class="alert {{ 'alert-error' if 'error' in msg|lower or 'invalid' in msg|lower else 'alert-success' }}">
+  <span>{{ msg }}</span>
+  <button class="flash-close" onclick="this.parentElement.remove()">✖</button>
+</div>
+{% endfor %} {% endwith %}
+
+<div class="content-card">
+    <div class="card-header">
+        <h3>User Details</h3>
+    </div>
+    
+    <div class="card-body">
+        <form method="post" class="form-container">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" value="{{ user.name }}" placeholder="Enter full name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="Enter email address" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select name="role" id="role" required>
+                    <option value="MANAGER" {% if user.role=="MANAGER" %}selected{% endif %}>Manager</option>
+                    <option value="DEVELOPER" {% if user.role=="DEVELOPER" %}selected{% endif %}>Developer</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="specialization">Specialization</label>
+                <select name="specialization" id="specialization" required>
+                    <option value="Frontend Developer" {% if user.role_specialization == "Frontend Developer" %}selected{% endif %}>Frontend Developer</option>
+                    <option value="Backend Developer" {% if user.role_specialization == "Backend Developer" %}selected{% endif %}>Backend Developer</option>
+                    <option value="UI/UX Developer" {% if user.role_specialization == "UI/UX Developer" %}selected{% endif %}>UI/UX Developer</option>
+                    <option value="Mobile Developer" {% if user.role_specialization == "Mobile Developer" %}selected{% endif %}>Mobile Developer</option>
+                    <option value="Odoo Developer" {% if user.role_specialization == "Odoo Developer" %}selected{% endif %}>Odoo Developer</option>
+                </select>
+            </div>
+            
+            {% if user.role == "MANAGER" %}
+            <h3>Developers</h3>
+            
+            <select id="developersSelect" name="developers" multiple style="width:100%;">
+                {% for d in developers %}
+                <option value="{{ d.id }}"
+                {% if d.id in assigned_ids %} selected {% endif %}
+                {% if d.id in assigned_ids %} disabled {% endif %}>
+                {{ d.name }} - {{ d.role_specialization }}
+                </option>
+                {% endfor %}
+            </select>
+            {% endif %}
+            
+            <div class="form-actions">
+                <a href="{{ url_for('user_info', user_id=user.id) }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#developersSelect').select2({
+        placeholder: "Search developers...",
+        closeOnSelect: false,
+        width: '100%'
+    });
+});
+</script>
+{% endblock %}
